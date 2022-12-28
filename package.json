@@ -1,16 +1,14 @@
 {
-  "name": "har-parser",
+  "name": "har-transformer",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/server.js",
+  "description": "HAR Transformer",
+  "main": "src/main.ts",
   "scripts": {
-    "start": "node ./dist/server.js || true",
-    "build": "tsc -p tsconfig.json",
-    "clean": "rimraf dist/*",
-    "dev": "ts-node ./src/server.ts",
-    "dev:watch": "nodemon"
+    "build": "rimraf dist && tsc -p tsconfig.json",
+    "start": "ts-node ./src/main.ts",
+    "debug": "nodemon"
   },
-  "author": "",
+  "author": "Roman Levenets",
   "license": "ISC",
   "dependencies": {
     "copyfiles": "^2.4.1",
@@ -21,8 +19,5 @@
     "@types/node": "^18.11.17",
     "nodemon": "^2.0.20",
     "rimraf": "^3.0.2"
-  },
-  "engines": {
-    "node": "12.13.1"
   }
 }

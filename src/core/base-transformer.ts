@@ -1,7 +1,7 @@
+import fs from 'fs';
+import path from 'path';
 import { TransformationConfig } from './interfaces';
 import { HarParser } from './har-parser';
-import { writeFileSync } from 'fs';
-import { join } from 'path';
 import transformationConfig from '../transformation.config';
 
 export abstract class BaseTransformer {
@@ -11,11 +11,27 @@ export abstract class BaseTransformer {
         this.parser = new HarParser(this.config);
     }
 
+    abstract get transformerName(): string;
+
     abstract transform(): void;
 
-    protected writeContentsToFile(contents: string, fileName: string): void {
-        writeFileSync(join(transformationConfig.outputPath, fileName), contents, {
-            flag: 'w',
+    protected writeContentsToFile(fileName: string, contents: string): Promise<void> {
+        const directoryPath = path.join(transformationConfig.outputPath, `${this.transformerName}`);
+        const filePath = path.join(directoryPath, fileName);
+
+        if (!fs.existsSync(directoryPath)) {
+            fs.mkdirSync(directoryPath, { recursive: true });
+        }
+
+        return new Promise<void>((resolve, reject) => {
+            fs.writeFile(filePath, contents, { flag: 'w', encoding: 'utf-8' }, (err) => {
+                if (err) {
+                    reject(err);
+                    throw err;
+                }
+
+                resolve();
+            });
         });
     }
 }

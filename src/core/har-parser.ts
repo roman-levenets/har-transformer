@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import fs from 'fs';
 import { TransformationConfig, UrlInfo } from './interfaces';
 
 export class HarParser {
@@ -21,7 +21,7 @@ export class HarParser {
     }
 
     private getHarData(): any {
-        const harDataContents = readFileSync(this.config.harFilePath, 'utf-8');
+        const harDataContents = fs.readFileSync(this.config.harFilePath, 'utf-8');
         return JSON.parse(harDataContents);
     }
 }

@@ -6,10 +6,14 @@ export class LocustTransformer extends BaseTransformer {
         super(config);
     }
 
-    transform(): void {
+    get transformerName(): string {
+        return 'locust-transformer';
+    }
+
+    async transform(): Promise<void> {
         const urlList = this.parser.getRequestUrls();
 
-        let scriptContents = `from locust import HttpUser, task, events, between
+        let scriptContents = `from locust import HttpUser, task, events, between, LoadTestShape
 import gevent
 import json
 import greenlet
@@ -76,9 +80,9 @@ class LoadTestScenario(HttpUser):
         with open('data.json') as data_file:
             LoadTestScenario.test_data = json.load(data_file)\n`;
 
-        scriptContents += `\n${this.addLoadTestShape()}\n`;
+        scriptContents += `${this.addLoadTestShape()}\n`;
 
-        this.writeContentsToFile(scriptContents, 'locustfile.py');
+        await this.writeContentsToFile('locustfile.py', scriptContents);
     }
 
     private addLoadTestShape(): string {
@@ -92,18 +96,18 @@ class LoadTestScenario(HttpUser):
             spawn_rate -- Users to stop/start per second at every step
             time_limit -- Time limit in seconds
         """
-    
+
         step_time = 300
         step_load = 5
         spawn_rate = 5
         time_limit = 3600
-    
+
         def tick(self):
             run_time = self.get_run_time()
-    
+
             if run_time > self.time_limit:
                 return None
-    
+
             current_step = math.floor(run_time / self.step_time) + 1
             return (current_step * self.step_load, self.spawn_rate)`;
     }
